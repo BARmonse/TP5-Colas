@@ -12,9 +12,12 @@ namespace Colas
 {
     public partial class Form1 : Form
     {
+
+        private GestorColas gestorColas;
+
         double cantidad;
-        double mostrarDesde;
-        double mostrarHasta;
+        int mostrarDesde;
+        int mostrarHasta;
 
         double limInferiorActividad1;
         double limInferiorActividad2;
@@ -38,8 +41,8 @@ namespace Colas
         private void tomarDatos()
         {
             cantidad = double.Parse(cant.Text);
-            mostrarDesde = double.Parse(desde.Text);
-            mostrarHasta = double.Parse(hasta.Text);
+            mostrarDesde = int.Parse(desde.Text);
+            mostrarHasta = int.Parse(hasta.Text);
 
             limInferiorActividad1 = double.Parse(limInferiorAct1.Text);
             limInferiorActividad2 = double.Parse(limInferiorAct2.Text);
@@ -51,6 +54,18 @@ namespace Colas
 
             mediaExponencialActividad3 = double.Parse(mediaExpAct3.Text);
             mediaExponencialActividad5 = double.Parse(mediaExpAct5.Text);
+        }
+
+        private void btnGenerar_Click(object sender, EventArgs e)
+        {
+            gestorColas = new GestorColas(this);
+            gestorColas.simular(cantidad, mostrarDesde, mostrarHasta, limInferiorActividad1, limSuperiorActividad1, limInferiorActividad2, limSuperiorActividad2, mediaExponencialActividad3, limInferiorActividad4, limSuperiorActividad4, mediaExponencialActividad5);
+        }
+
+        public void mostrarResultados(DataTable resultados)
+        {
+            grdResultados.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.grdResultados.DataSource = resultados;
         }
     }
 }
