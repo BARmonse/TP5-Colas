@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Colas", "Colas.csproj", "{F96D2035-210F-42E3-B2D3-4C302C01CF44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F96D2035-210F-42E3-B2D3-4C302C01CF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F96D2035-210F-42E3-B2D3-4C302C01CF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F96D2035-210F-42E3-B2D3-4C302C01CF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F96D2035-210F-42E3-B2D3-4C302C01CF44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4C257C9-F296-49D7-B768-E83507183AE0}
+	EndGlobalSection
+EndGlobal
