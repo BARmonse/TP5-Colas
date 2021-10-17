@@ -58,6 +58,7 @@ namespace Colas
 
         private void btnGenerar_Click(object sender, EventArgs e)
         {
+            tomarDatos();
             gestorColas = new GestorColas(this);
             gestorColas.simular(cantidad, mostrarDesde, mostrarHasta, limInferiorActividad1, limSuperiorActividad1, limInferiorActividad2, limSuperiorActividad2, mediaExponencialActividad3, limInferiorActividad4, limSuperiorActividad4, mediaExponencialActividad5);
         }

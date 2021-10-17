@@ -102,6 +102,7 @@ namespace Colas
             this.desde.Name = "desde";
             this.desde.Size = new System.Drawing.Size(100, 23);
             this.desde.TabIndex = 3;
+            this.desde.Text = "0";
             // 
             // hasta
             // 
@@ -109,6 +110,7 @@ namespace Colas
             this.hasta.Name = "hasta";
             this.hasta.Size = new System.Drawing.Size(100, 23);
             this.hasta.TabIndex = 4;
+            this.hasta.Text = "50";
             // 
             // groupBox1
             // 
@@ -130,6 +132,7 @@ namespace Colas
             this.limSuperiorAct1.Name = "limSuperiorAct1";
             this.limSuperiorAct1.Size = new System.Drawing.Size(100, 32);
             this.limSuperiorAct1.TabIndex = 13;
+            this.limSuperiorAct1.Text = "30";
             // 
             // limInferiorAct1
             // 
@@ -137,6 +140,7 @@ namespace Colas
             this.limInferiorAct1.Name = "limInferiorAct1";
             this.limInferiorAct1.Size = new System.Drawing.Size(100, 32);
             this.limInferiorAct1.TabIndex = 12;
+            this.limInferiorAct1.Text = "20";
             // 
             // label4
             // 
@@ -178,6 +182,7 @@ namespace Colas
             this.limSuperiorAct2.Name = "limSuperiorAct2";
             this.limSuperiorAct2.Size = new System.Drawing.Size(95, 32);
             this.limSuperiorAct2.TabIndex = 14;
+            this.limSuperiorAct2.Text = "50";
             // 
             // limInferiorAct2
             // 
@@ -185,6 +190,7 @@ namespace Colas
             this.limInferiorAct2.Name = "limInferiorAct2";
             this.limInferiorAct2.Size = new System.Drawing.Size(94, 32);
             this.limInferiorAct2.TabIndex = 13;
+            this.limInferiorAct2.Text = "30";
             // 
             // label6
             // 
@@ -234,6 +240,7 @@ namespace Colas
             this.mediaExpAct5.Name = "mediaExpAct5";
             this.mediaExpAct5.Size = new System.Drawing.Size(100, 32);
             this.mediaExpAct5.TabIndex = 15;
+            this.mediaExpAct5.Text = "5";
             // 
             // groupBox4
             // 
@@ -275,6 +282,7 @@ namespace Colas
             this.limSuperiorAct4.Name = "limSuperiorAct4";
             this.limSuperiorAct4.Size = new System.Drawing.Size(100, 32);
             this.limSuperiorAct4.TabIndex = 4;
+            this.limSuperiorAct4.Text = "20";
             // 
             // limInferiorAct4
             // 
@@ -282,6 +290,7 @@ namespace Colas
             this.limInferiorAct4.Name = "limInferiorAct4";
             this.limInferiorAct4.Size = new System.Drawing.Size(100, 32);
             this.limInferiorAct4.TabIndex = 14;
+            this.limInferiorAct4.Text = "10";
             // 
             // groupBox5
             // 
@@ -311,6 +320,7 @@ namespace Colas
             this.mediaExpAct3.Name = "mediaExpAct3";
             this.mediaExpAct3.Size = new System.Drawing.Size(100, 32);
             this.mediaExpAct3.TabIndex = 4;
+            this.mediaExpAct3.Text = "30";
             // 
             // lbl23
             // 
@@ -328,6 +338,7 @@ namespace Colas
             this.cant.Name = "cant";
             this.cant.Size = new System.Drawing.Size(100, 23);
             this.cant.TabIndex = 11;
+            this.cant.Text = "1000";
             // 
             // grdResultados
             // 
