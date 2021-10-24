@@ -59,8 +59,24 @@ namespace Colas
         private void btnGenerar_Click(object sender, EventArgs e)
         {
             tomarDatos();
-            gestorColas = new GestorColas(this);
-            gestorColas.simular(cantidad, mostrarDesde, mostrarHasta, limInferiorActividad1, limSuperiorActividad1, limInferiorActividad2, limSuperiorActividad2, mediaExponencialActividad3, limInferiorActividad4, limSuperiorActividad4, mediaExponencialActividad5);
+            if (hayErrores())
+            {
+                MessageBox.Show("Datos inválidos");
+            }
+            else
+            {
+                gestorColas = new GestorColas(this);
+                gestorColas.simular(cantidad, mostrarDesde, mostrarHasta, limInferiorActividad1, limSuperiorActividad1, limInferiorActividad2, limSuperiorActividad2, mediaExponencialActividad3, limInferiorActividad4, limSuperiorActividad4, mediaExponencialActividad5);
+            }
+        }
+            
+        private Boolean hayErrores()
+        {
+            if (cantidad <=0 || mostrarDesde < 0 || mostrarHasta <=0 || limInferiorActividad1 < 0 || limInferiorActividad1 >= limSuperiorActividad1
+                || limSuperiorActividad1 < 0 || limInferiorActividad2 >= limSuperiorActividad2 || limInferiorActividad2 < 0 || limSuperiorActividad2 < 0
+                || mediaExponencialActividad3 <= 0 || mediaExponencialActividad5 <= 0
+                || limInferiorActividad4 < 0 || limSuperiorActividad4 < 0 || limInferiorActividad4 >= limSuperiorActividad4) { return true; }
+            return false;
         }
 
         public void mostrarResultados(DataTable resultados)

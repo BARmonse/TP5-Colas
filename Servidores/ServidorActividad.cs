@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Colas.Servidores
 {
-    class ServidorActividad : ICloneable
+    class ServidorActividad
     {
         string LIBRE = "libre";
         string OCUPADO = "ocupado";
@@ -16,6 +16,7 @@ namespace Colas.Servidores
         public double finAtencion { get; set; }
 
         public Queue<Producto> cola;
+        public Queue<Producto> colaDeposito;
         public Producto productoActual;
 
         public ServidorActividad()
@@ -23,10 +24,15 @@ namespace Colas.Servidores
             this.estado = LIBRE;
             this.finAtencion = -1;
             this.cola = new Queue<Producto>();
+            this.colaDeposito = new Queue<Producto>();
         }
         public Boolean tieneCola()
         {
             return cola.Count > 0;
+        }
+        public Boolean tieneColaDeposito()
+        {
+            return colaDeposito.Count > 0;
         }
         public void agregarFinAtencion(double tiempo)
         {
@@ -46,28 +52,33 @@ namespace Colas.Servidores
             this.estado = LIBRE;
             this.finAtencion = -1;
         }
+        public void bloquear()
+        {
+            this.estado = BLOQUEADO;
+            this.finAtencion = -1;
+        }
         public Boolean estaOcupada()
         {
             return this.estado.Equals(OCUPADO);
         }
-        public object Clone()
+        public Boolean estaLibre()
         {
-            ServidorActividad res = new ServidorActividad();
-            res.estado = this.estado;
-            res.finAtencion = this.finAtencion;
-            res.productoActual = this.productoActual;
-            Producto[] temp = new Producto[cola.Count];
-            cola.CopyTo(temp, 0);
-            res.cola = new Queue<Producto>(temp);
-
-            return res;
+            return this.estado.Equals(LIBRE);
         }
-        public Producto siguienteCliente()
+        public Boolean estaBloqueado()
+        {
+            return this.estado.Equals(BLOQUEADO);
+        }
+        public Producto siguienteProducto()
         {
             return cola.Dequeue();
         }
+        public Producto siguienteProductoDeposito()
+        {
+            return colaDeposito.Dequeue();
+        }
 
-        public Producto getClienteActual()
+        public Producto getProductoActual()
         {
             return this.productoActual;
         }
@@ -75,6 +86,10 @@ namespace Colas.Servidores
         public void agregarACola(Producto producto)
         {
             cola.Enqueue(producto);
+        }
+        public void agregarAColaDeposito(Producto producto)
+        {
+            colaDeposito.Enqueue(producto);
         }
     }
 }

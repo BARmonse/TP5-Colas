@@ -15,6 +15,8 @@ namespace Colas
         private Form1 pantallaResultados;
         private Linea lineaActual;
         private Truncador truncador;
+        private int cantidadProductos;
+        private int indice;
 
         public GestorColas(Form1 pantallaResultados)
         {
@@ -26,25 +28,56 @@ namespace Colas
 
         private void crearTabla(DataTable tabla)
         {
-            tabla.Columns.Add("i");
-            tabla.Columns.Add("evento");
-            tabla.Columns.Add("reloj");
-            tabla.Columns.Add("Proxima llegada");
-            tabla.Columns.Add("Estado servidor 1");
-            tabla.Columns.Add("Siguiente Fin atención 1");
-            tabla.Columns.Add("Cola servidor 1");
-            tabla.Columns.Add("Estado servidor 2");
-            tabla.Columns.Add("Siguiente Fin atención 2");
-            tabla.Columns.Add("Cola servidor 2");
-            tabla.Columns.Add("Estado servidor 3");
-            tabla.Columns.Add("Siguiente Fin atención 3");
-            tabla.Columns.Add("Cola servidor 3");
-            tabla.Columns.Add("Estado servidor 4");
-            tabla.Columns.Add("Siguiente Fin atención 4");
-            tabla.Columns.Add("Cola servidor 4");
-            tabla.Columns.Add("Estado servidor 5");
-            tabla.Columns.Add("Siguiente Fin atención 5");
-            tabla.Columns.Add("Cola servidor 5");
+            tabla.Columns.Add("i");//linea 0
+            tabla.Columns.Add("evento");//linea 1
+            tabla.Columns.Add("reloj");//linea 2
+            tabla.Columns.Add("Proxima llegada");//linea 3
+            tabla.Columns.Add("Estado servidor 1");//linea 4
+            tabla.Columns.Add("Siguiente Fin atención 1");//linea 5
+            tabla.Columns.Add("Cola servidor 1");//linea 6
+            tabla.Columns.Add("Estado servidor 2");//linea 7
+            tabla.Columns.Add("Siguiente Fin atención 2");//linea 8
+            tabla.Columns.Add("Cola servidor 2");//linea 9
+            tabla.Columns.Add("Depósito 2");//linea 10
+            tabla.Columns.Add("Estado servidor 3");//linea 11
+            tabla.Columns.Add("Siguiente Fin atención 3");//linea 12
+            tabla.Columns.Add("Cola servidor 3");//linea 13
+            tabla.Columns.Add("Depósito 3");//linea 14
+            tabla.Columns.Add("Estado servidor 4");//linea 15
+            tabla.Columns.Add("Siguiente Fin atención 4");//linea 16
+            tabla.Columns.Add("Cola servidor 4");//linea 17
+            tabla.Columns.Add("Depósito 4");//linea 18
+            tabla.Columns.Add("Estado servidor 5");//linea 19
+            tabla.Columns.Add("Siguiente Fin atención 5");//linea 20
+            tabla.Columns.Add("Cola servidor 5");//linea 21
+            tabla.Columns.Add("Depósito 5");//linea 22
+            tabla.Columns.Add("Productos ensamblados");//linea 23
+            tabla.Columns.Add("Tiempos de espera Servidor1");//linea 24
+            tabla.Columns.Add("Tiempos de espera Servidor2");//linea 25
+            tabla.Columns.Add("Tiempos de espera Servidor3");//linea 26
+            tabla.Columns.Add("Tiempos de espera Servidor4");//linea 27
+            tabla.Columns.Add("Tiempos de espera Servidor5");//linea 28
+            tabla.Columns.Add("Tiempo acumulado de espera");//linea 29
+            tabla.Columns.Add("Cola máxima servidor1");//linea 30
+            tabla.Columns.Add("Cola máxima servidor2");//linea 31
+            tabla.Columns.Add("Cola máxima servidor3");//linea 32
+            tabla.Columns.Add("Cola máxima servidor4");//linea 33
+            tabla.Columns.Add("Cola máxima servidor5");//linea 34
+            tabla.Columns.Add("Cola encastre");//linea 35
+            tabla.Columns.Add("Promedio productos en cola");//linea 36
+            tabla.Columns.Add("Promedio productos en sistema");//linea 37
+            tabla.Columns.Add("Porcentaje ocupación servidor1");//linea 38
+            tabla.Columns.Add("Porcentaje ocupación servidor2");//linea 39
+            tabla.Columns.Add("Porcentaje ocupación servidor3");//linea 40
+            tabla.Columns.Add("Porcentaje ocupación servidor4");//linea 41
+            tabla.Columns.Add("Porcentaje ocupación servidor5");//linea 42
+            tabla.Columns.Add("Bloqueo/Ocupacion servidor5");//linea 43
+            tabla.Columns.Add("Productos ensamblados por hora");//linea 44
+            tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 45
+            tabla.Columns.Add("Horas transcurridas");//linea 46
+            tabla.Columns.Add("Promedio ensambles por hora");//linea 47
+
+
             truncador = new Truncador(2);
         }
         public void simular(double cantidad, int desde, int hasta, double limInferiorActividad1, double limSuperiorActividad1, double limInferiorActividad2, double limSuperiorActividad2, double mediaExponencialActividad3, double limInferiorActividad4, double limSuperiorActividad4, double mediaExponencialActividad5)
@@ -62,8 +95,12 @@ namespace Colas
                 lineaActual.calcularFinAtencion1(limInferiorActividad1,limSuperiorActividad1);
                 lineaActual.calcularFinAtencion2(limInferiorActividad2,limSuperiorActividad2);
                 lineaActual.calcularFinAtencion3(mediaExponencialActividad3);
-                //lineaActual.calcularFinAtencion4(limInferiorActividad4,limSuperiorActividad4);
-                //lineaActual.calcularFinAtencion5(mediaExponencialActividad5);
+                lineaActual.calcularFinAtencion4(limInferiorActividad4,limSuperiorActividad4);
+                lineaActual.calcularFinAtencion5(mediaExponencialActividad5);
+
+                lineaActual.calcularColasMaximas();
+                lineaActual.calcularPorcentajeOcupacionServidores();
+                lineaActual.calcularEnsamblesPorHora();
 
                 lineaAnterior = lineaActual;
                 if (i >= desde && i <= hasta)
@@ -87,17 +124,56 @@ namespace Colas
             row[7] = linea.servidorActividad2.estado;
             row[8] = linea.servidorActividad2.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad2.finAtencion).ToString() : "";
             row[9] = linea.servidorActividad2.cola.Count;
-            row[10] = linea.servidorActividad3.estado;
-            row[11] = linea.servidorActividad3.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad3.finAtencion).ToString() : "";
-            row[12] = linea.servidorActividad3.cola.Count;
-            row[13] = linea.servidorActividad4.estado;
-            row[14] = linea.servidorActividad4.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad4.finAtencion).ToString() : "";
-            row[15] = linea.servidorActividad4.cola.Count;
-            row[16] = linea.servidorActividad5.estado;
-            row[17] = linea.servidorActividad5.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad5.finAtencion).ToString() : "";
-            row[18] = linea.servidorActividad5.cola.Count;
+            row[10] = linea.servidorActividad2.colaDeposito.Count;
+            row[11] = linea.servidorActividad3.estado;
+            row[12] = linea.servidorActividad3.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad3.finAtencion).ToString() : "";
+            row[13] = linea.servidorActividad3.cola.Count;
+            row[14] = linea.servidorActividad3.colaDeposito.Count;
+            row[15] = linea.servidorActividad4.estado;
+            row[16] = linea.servidorActividad4.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad4.finAtencion).ToString() : "";
+            row[17] = linea.servidorActividad4.cola.Count;
+            row[18] = linea.servidorActividad4.colaDeposito.Count;
+            row[19] = linea.servidorActividad5.estado;
+            row[20] = linea.servidorActividad5.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad5.finAtencion).ToString() : "";
+            row[21] = linea.servidorActividad5.cola.Count;
+            row[22] = linea.servidorActividad5.colaDeposito.Count;
+            row[23] = linea.cantidadProductos.ToString();
 
+            row[30] = linea.colaMaximaServidor1.ToString();
+            row[31] = linea.colaMaximaServidor2.ToString();
+            row[32] = linea.colaMaximaServidor3.ToString();
+            row[33] = linea.colaMaximaServidor4.ToString();
+            row[34] = linea.colaMaximaServidor5.ToString();
+            row[35] = linea.colaEncastre.ToString();
+
+            row[38] = truncador.truncar(linea.porcentajeOcupacionServidor1).ToString();
+            row[39] = truncador.truncar(linea.porcentajeOcupacionServidor2).ToString();
+            row[40] = truncador.truncar(linea.porcentajeOcupacionServidor3).ToString();
+            row[41] = truncador.truncar(linea.porcentajeOcupacionServidor4).ToString();
+            row[42] = truncador.truncar(linea.porcentajeOcupacionServidor5).ToString();
+
+            row[44] = truncador.truncar(linea.ensamblesHora).ToString();
+            row[45] = truncador.truncar(linea.probabilidad3Ensambles).ToString();
+            row[46] = truncador.truncar(linea.horasTranscurridas).ToString();
+            row[47] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
+
+
+            indice = 47;
+            for (int j = 0; j < cantidadProductos; j++)
+            {
+                indice += 1;
+                row[indice] = linea.productos[j].estado;
+                indice += 1;
+                row[indice] = linea.productos[j].horaLlegadaServidor.ToString() != "-1" ? linea.productos[j].horaLlegadaServidor.ToString() : ""; ;
+            }
             resultados.Rows.Add(row);
+        }
+
+        public void agregarColumna()
+        {
+            cantidadProductos++;
+            this.resultados.Columns.Add("estado" + cantidadProductos);
+            this.resultados.Columns.Add("hora espera" + cantidadProductos);
         }
     }
 }
