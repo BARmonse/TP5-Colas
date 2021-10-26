@@ -23,7 +23,6 @@ namespace Colas
             this.pantallaResultados = pantallaResultados;
             resultados = new DataTable();
             crearTabla(resultados);
-
         }
 
         private void crearTabla(DataTable tabla)
@@ -64,18 +63,20 @@ namespace Colas
             tabla.Columns.Add("Cola máxima servidor4");//linea 33
             tabla.Columns.Add("Cola máxima servidor5");//linea 34
             tabla.Columns.Add("Cola encastre");//linea 35
-            tabla.Columns.Add("Promedio productos en cola");//linea 36
+            tabla.Columns.Add("Promedio productos en cola de servidores");//linea 36
             tabla.Columns.Add("Promedio productos en sistema");//linea 37
             tabla.Columns.Add("Porcentaje ocupación servidor1");//linea 38
             tabla.Columns.Add("Porcentaje ocupación servidor2");//linea 39
             tabla.Columns.Add("Porcentaje ocupación servidor3");//linea 40
             tabla.Columns.Add("Porcentaje ocupación servidor4");//linea 41
             tabla.Columns.Add("Porcentaje ocupación servidor5");//linea 42
-            tabla.Columns.Add("Bloqueo/Ocupacion servidor5");//linea 43
-            tabla.Columns.Add("Productos ensamblados por hora");//linea 44
-            tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 45
-            tabla.Columns.Add("Horas transcurridas");//linea 46
-            tabla.Columns.Add("Promedio ensambles por hora");//linea 47
+            tabla.Columns.Add("Tiempo bloqueo servidor 5");//linea 43
+            tabla.Columns.Add("Tiempo ocupación servidor 5");//linea 44
+            tabla.Columns.Add("Bloqueo/Ocupacion servidor5");//linea 45
+            tabla.Columns.Add("Productos ensamblados por hora");//linea 46
+            tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 47
+            tabla.Columns.Add("Horas transcurridas");//linea 48
+            tabla.Columns.Add("Promedio ensambles por hora");//linea 49
 
 
             truncador = new Truncador(2);
@@ -101,6 +102,11 @@ namespace Colas
                 lineaActual.calcularColasMaximas();
                 lineaActual.calcularPorcentajeOcupacionServidores();
                 lineaActual.calcularEnsamblesPorHora();
+                lineaActual.calcularPromedioProductosCola();
+                lineaActual.calcularPromedioProductosSistema();
+                lineaActual.calcularTiempoBloqueo();
+                lineaActual.calcularTiempoOcupacion();
+                lineaActual.calcularProporcionBloqueoOcupacion();
 
                 lineaAnterior = lineaActual;
                 if (i >= desde && i <= hasta)
@@ -145,17 +151,20 @@ namespace Colas
             row[33] = linea.colaMaximaServidor4.ToString();
             row[34] = linea.colaMaximaServidor5.ToString();
             row[35] = linea.colaEncastre.ToString();
-
+            row[36] = truncador.truncar(linea.promedioProductosCola).ToString();
+            row[37] = truncador.truncar(linea.promedioProductosSistema).ToString();
             row[38] = truncador.truncar(linea.porcentajeOcupacionServidor1).ToString();
             row[39] = truncador.truncar(linea.porcentajeOcupacionServidor2).ToString();
             row[40] = truncador.truncar(linea.porcentajeOcupacionServidor3).ToString();
             row[41] = truncador.truncar(linea.porcentajeOcupacionServidor4).ToString();
             row[42] = truncador.truncar(linea.porcentajeOcupacionServidor5).ToString();
-
-            row[44] = truncador.truncar(linea.ensamblesHora).ToString();
-            row[45] = truncador.truncar(linea.probabilidad3Ensambles).ToString();
-            row[46] = truncador.truncar(linea.horasTranscurridas).ToString();
-            row[47] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
+            row[43] = truncador.truncar(linea.acumuladorTiemposBloqueo).ToString();
+            row[44] = truncador.truncar(linea.acumuladorTiemposOcupacion).ToString();
+            row[45] = truncador.truncar(linea.proporcionBloqueoOcupacion).ToString();
+            row[46] = truncador.truncar(linea.ensamblesHora).ToString();
+            row[47] = truncador.truncar(linea.probabilidad3Ensambles).ToString();
+            row[48] = truncador.truncar(linea.horasTranscurridas).ToString();
+            row[49] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
 
 
             indice = 47;

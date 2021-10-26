@@ -64,6 +64,18 @@ namespace Colas
         public double horasTranscurridas = 0;
         public double promedioEnsamblesHora = 0;
 
+        public double cliente1;
+        public double cliente2;
+        public double cliente3;
+        public double cliente4;
+        public double cliente5;
+        public double promedioProductosCola = 0;
+        public double promedioProductosSistema = 0;
+
+        public double acumuladorTiemposBloqueo;
+        public double acumuladorTiemposOcupacion;
+        public double proporcionBloqueoOcupacion;
+
         public int idFila;
         public int desde;
         public int hasta;
@@ -123,6 +135,11 @@ namespace Colas
             this.contador3EnsamblesHora = lineaAnterior.contador3EnsamblesHora;
             this.horasTranscurridas = lineaAnterior.horasTranscurridas;
             this.promedioEnsamblesHora = lineaAnterior.promedioEnsamblesHora;
+            this.promedioProductosCola = lineaAnterior.promedioProductosCola;
+            this.promedioProductosSistema = lineaAnterior.promedioProductosSistema;
+            this.acumuladorTiemposBloqueo = lineaAnterior.acumuladorTiemposBloqueo;
+            this.acumuladorTiemposOcupacion = lineaAnterior.acumuladorTiemposOcupacion;
+            this.proporcionBloqueoOcupacion = lineaAnterior.proporcionBloqueoOcupacion;
         }
         private Producto buscarProductoLibre()
         {
@@ -233,7 +250,7 @@ namespace Colas
             if (this.evento.Equals(LLEGADA_PEDIDO))
             {
                 Producto productoActual = buscarProductoLibre();
-                if (lineaAnterior.servidorActividad1.estaOcupada())
+                if (lineaAnterior.servidorActividad1.estaOcupado())
                 {
                     esperarAtencionServidor1(servidorActividad, productoActual);
                 }
@@ -241,7 +258,6 @@ namespace Colas
                 {
                     atenderServidor1(servidorActividad, productoActual, a, b);
                 }
-                return;
             }
         }
         private void calcularFinAtencion1EventoFinAtencion1(ServidorActividad servidorActividad, double a, double b)
@@ -265,7 +281,7 @@ namespace Colas
             if (this.evento.Equals(LLEGADA_PEDIDO))
             {
                 Producto productoActual = buscarProductoLibre();
-                if (lineaAnterior.servidorActividad2.estaOcupada())
+                if (lineaAnterior.servidorActividad2.estaOcupado())
                 {
                     esperarAtencionServidor2(servidorActividad, productoActual);
                 }
@@ -299,7 +315,7 @@ namespace Colas
             if (this.evento.Equals(LLEGADA_PEDIDO))
             {
                 Producto productoActual = buscarProductoLibre();
-                if (lineaAnterior.servidorActividad3.estaOcupada())
+                if (lineaAnterior.servidorActividad3.estaOcupado())
                 {
                     esperarAtencionServidor3(servidorActividad, productoActual);
                 }
@@ -343,7 +359,7 @@ namespace Colas
             if (this.evento.Equals(FIN_ATENCION1))
             {
                 Producto productoActual = buscarProductoLibre();
-                if (lineaAnterior.servidorActividad4.estaOcupada())
+                if (lineaAnterior.servidorActividad4.estaOcupado())
                 {
                     esperarAtencionServidor4(servidorActividad, productoActual);
                 }
@@ -392,7 +408,7 @@ namespace Colas
                     return;
                 }
 
-                if (servidorActividad.estaOcupada() && servidorActividad4.tieneColaDeposito())
+                if (servidorActividad.estaOcupado() && servidorActividad4.tieneColaDeposito())
                 {
                     Producto productoActual = servidorActividad4.siguienteProductoDeposito();
                     Producto productoDeposito2 = servidorActividad2.siguienteProductoDeposito();
@@ -401,7 +417,7 @@ namespace Colas
                     esperarAtencionServidor5(servidorActividad,productoActual);
                     return;
                 }
-                if(servidorActividad.estaOcupada() && !servidorActividad4.tieneColaDeposito())
+                if(servidorActividad.estaOcupado() && !servidorActividad4.tieneColaDeposito())
                 {
                     servidorActividad.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad));
                 }
@@ -426,7 +442,7 @@ namespace Colas
                     return;
                 }
 
-                if (servidorActividad.estaOcupada() && servidorActividad2.tieneColaDeposito())
+                if (servidorActividad.estaOcupado() && servidorActividad2.tieneColaDeposito())
                 {
                     Producto productoActual = servidorActividad4.siguienteProductoDeposito();
                     Producto productoDeposito2 = servidorActividad2.siguienteProductoDeposito();
@@ -435,7 +451,7 @@ namespace Colas
                     esperarAtencionServidor5(servidorActividad, productoActual);
                     return;
                 }
-                if (servidorActividad.estaOcupada() && !servidorActividad2.tieneColaDeposito())
+                if (servidorActividad.estaOcupado() && !servidorActividad2.tieneColaDeposito())
                 {
                     servidorActividad.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad));
                 }
@@ -691,7 +707,7 @@ namespace Colas
         {
             if (this.evento.Equals(CONTEO) && lineaAnterior.tieneFinAtencion(servidorActividad4))
             {
-                servidorActividad4.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad5));
+                servidorActividad4.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad4));
             }
         }
         private void calcularFinAtencion5EventoLlegadaCliente()
@@ -751,35 +767,35 @@ namespace Colas
 
         private void calcularPorcentajeOcupacionServidor1()
         {
-            if (servidorActividad1.estaOcupada())
+            if (servidorActividad1.estaOcupado())
             {
                 contadorOcupadoServidor1 += 1;
             }
         }
         private void calcularPorcentajeOcupacionServidor2()
         {
-            if (servidorActividad2.estaOcupada())
+            if (servidorActividad2.estaOcupado())
             {
                 contadorOcupadoServidor2 += 1;
             }
         }
         private void calcularPorcentajeOcupacionServidor3()
         {
-            if (servidorActividad3.estaOcupada())
+            if (servidorActividad3.estaOcupado())
             {
                 contadorOcupadoServidor3 += 1;
             }
         }
         private void calcularPorcentajeOcupacionServidor4()
         {
-            if (servidorActividad4.estaOcupada())
+            if (servidorActividad4.estaOcupado())
             {
                 contadorOcupadoServidor4 += 1;
             }
         }
         private void calcularPorcentajeOcupacionServidor5()
         {
-            if (servidorActividad5.estaOcupada())
+            if (servidorActividad5.estaOcupado())
             {
                 contadorOcupadoServidor5 += 1;
             }
@@ -792,13 +808,67 @@ namespace Colas
                 {
                     contador3EnsamblesHora += 1;
                 }
-                probabilidad3Ensambles = contador3EnsamblesHora / idFila;
+                horasTranscurridas += 1;
+                probabilidad3Ensambles = contador3EnsamblesHora / horasTranscurridas;
 
                 ensamblesHora = 0;
-                horasTranscurridas += 1;
+                
 
                 promedioEnsamblesHora = (lineaAnterior.promedioEnsamblesHora + contador3EnsamblesHora) / horasTranscurridas;
             }
+        }
+        public void calcularPromedioProductosCola()
+        {
+            promedioProductosCola = (lineaAnterior.promedioProductosCola + 
+                servidorActividad1.cola.Count + servidorActividad2.cola.Count + servidorActividad3.cola.Count
+                + servidorActividad4.cola.Count + servidorActividad5.cola.Count) / 5;
+        }
+        public void calcularPromedioProductosSistema()
+        {
+             cliente1 = hayClienteServidor(servidorActividad1);
+             cliente2 = hayClienteServidor(servidorActividad2);
+             cliente3 = hayClienteServidor(servidorActividad3);
+             cliente4 = hayClienteServidor(servidorActividad4);
+             cliente5 = hayClienteServidor(servidorActividad5);
+
+            promedioProductosSistema = (lineaAnterior.promedioProductosSistema + 
+                servidorActividad1.cola.Count + cliente1 +
+                servidorActividad2.cola.Count + servidorActividad2.colaDeposito.Count + cliente2 +
+                servidorActividad3.cola.Count + servidorActividad3.colaDeposito.Count + cliente3 +
+                servidorActividad4.cola.Count + servidorActividad3.colaDeposito.Count + cliente4 +
+                servidorActividad5.cola.Count + servidorActividad5.colaDeposito.Count + cliente5) / idFila;
+        }
+
+        private double hayClienteServidor(ServidorActividad servidorActividad)
+        {
+            if (servidorActividad.estaOcupado())
+            {
+                return 1;
+            }
+            return 0;
+        }
+
+        public void calcularTiempoBloqueo()
+        {
+            if (lineaAnterior.servidorActividad5.estaBloqueado())
+            {
+                this.acumuladorTiemposBloqueo += (reloj - lineaAnterior.reloj);
+            }
+            
+        }
+
+        public void calcularTiempoOcupacion()
+        {
+            if (lineaAnterior.servidorActividad5.estaOcupado())
+            {
+                this.acumuladorTiemposOcupacion += (reloj - lineaAnterior.reloj);
+            }
+        }
+
+        public void calcularProporcionBloqueoOcupacion()
+        {
+            if (this.acumuladorTiemposOcupacion == 0) { proporcionBloqueoOcupacion = 0; }
+            else { proporcionBloqueoOcupacion = this.acumuladorTiemposBloqueo / this.acumuladorTiemposOcupacion; }
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Colas.Servidores
             this.estado = BLOQUEADO;
             this.finAtencion = -1;
         }
-        public Boolean estaOcupada()
+        public Boolean estaOcupado()
         {
             return this.estado.Equals(OCUPADO);
         }
