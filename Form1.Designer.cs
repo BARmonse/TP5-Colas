@@ -347,14 +347,14 @@ namespace Colas
             this.grdResultados.Location = new System.Drawing.Point(12, 138);
             this.grdResultados.Name = "grdResultados";
             this.grdResultados.RowTemplate.Height = 25;
-            this.grdResultados.Size = new System.Drawing.Size(1224, 332);
+            this.grdResultados.Size = new System.Drawing.Size(1304, 512);
             this.grdResultados.TabIndex = 12;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 482);
+            this.ClientSize = new System.Drawing.Size(1328, 662);
             this.Controls.Add(this.grdResultados);
             this.Controls.Add(this.cant);
             this.Controls.Add(this.lbl23);
