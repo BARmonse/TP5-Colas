@@ -21,6 +21,7 @@ namespace Colas
         String SIENDO_PROCESADO_SERVIDOR4 = "SPS4";
         String SIENDO_PROCESADO_SERVIDOR5 = "SPS5";
 
+        String EN_DEPOSITO1 = "ED1";
         String EN_DEPOSITO2 = "ED2";
         String EN_DEPOSITO4 = "ED4";
         String ESPERANDO_ENCASTRE = "EE";
@@ -75,6 +76,10 @@ namespace Colas
         public void atenderServidor5()
         {
             this.estado = SIENDO_PROCESADO_SERVIDOR5;
+        }
+        public void colocarDeposito1()
+        {
+            this.estado = EN_DEPOSITO1;
         }
         public void colocarDeposito2()
         {

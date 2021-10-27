@@ -56,7 +56,7 @@ namespace Colas
             tabla.Columns.Add("Tiempos de espera Servidor3");//linea 26
             tabla.Columns.Add("Tiempos de espera Servidor4");//linea 27
             tabla.Columns.Add("Tiempos de espera Servidor5");//linea 28
-            tabla.Columns.Add("Tiempo acumulado de espera");//linea 29
+            tabla.Columns.Add("Duración promedio de ensamble");//linea 29
             tabla.Columns.Add("Cola máxima servidor1");//linea 30
             tabla.Columns.Add("Cola máxima servidor2");//linea 31
             tabla.Columns.Add("Cola máxima servidor3");//linea 32
@@ -77,7 +77,6 @@ namespace Colas
             tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 47
             tabla.Columns.Add("Horas transcurridas");//linea 48
             tabla.Columns.Add("Promedio ensambles por hora");//linea 49
-
 
             truncador = new Truncador(2);
         }
@@ -107,6 +106,7 @@ namespace Colas
                 lineaActual.calcularTiempoBloqueo();
                 lineaActual.calcularTiempoOcupacion();
                 lineaActual.calcularProporcionBloqueoOcupacion();
+                lineaActual.calcularPromedioDuracionEnsamble();
 
                 lineaAnterior = lineaActual;
                 if (i >= desde && i <= hasta)
@@ -144,7 +144,12 @@ namespace Colas
             row[21] = linea.servidorActividad5.cola.Count;
             row[22] = linea.servidorActividad5.colaDeposito.Count;
             row[23] = linea.cantidadProductos.ToString();
-
+            row[24] = truncador.truncar(linea.acumuladorEsperaServidor1).ToString();
+            row[25] = truncador.truncar(linea.acumuladorEsperaServidor2).ToString();
+            row[26] = truncador.truncar(linea.acumuladorEsperaServidor3).ToString();
+            row[27] = truncador.truncar(linea.acumuladorEsperaServidor4).ToString();
+            row[28] = truncador.truncar(linea.acumuladorEsperaServidor5).ToString();
+            row[29] = truncador.truncar(linea.promedioDuracionEnsamble).ToString();
             row[30] = linea.colaMaximaServidor1.ToString();
             row[31] = linea.colaMaximaServidor2.ToString();
             row[32] = linea.colaMaximaServidor3.ToString();
@@ -167,13 +172,13 @@ namespace Colas
             row[49] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
 
 
-            indice = 47;
+            indice = 49;
             for (int j = 0; j < cantidadProductos; j++)
             {
                 indice += 1;
                 row[indice] = linea.productos[j].estado;
                 indice += 1;
-                row[indice] = linea.productos[j].horaLlegadaServidor.ToString() != "-1" ? linea.productos[j].horaLlegadaServidor.ToString() : ""; ;
+                row[indice] = linea.productos[j].horaLlegadaServidor.ToString() != "-1" ? truncador.truncar(linea.productos[j].horaLlegadaServidor).ToString() : ""; ;
             }
             resultados.Rows.Add(row);
         }
