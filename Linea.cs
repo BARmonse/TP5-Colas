@@ -277,6 +277,7 @@ namespace Colas
                 Producto productoProcesado = servidorActividad.getProductoActual();
                 servidorActividad.agregarAColaDeposito(productoProcesado);
                 productoProcesado.colocarDeposito1();
+                productosLibres.Enqueue(productoProcesado);//Recién agregado
 
                 if (lineaAnterior.tieneColaServidor(servidorActividad))
                 {
@@ -417,6 +418,7 @@ namespace Colas
                     Producto productoDeposito2 = servidorActividad2.siguienteProductoDeposito();
                     productoDeposito2.limpiar();
                     productosLibres.Enqueue(productoDeposito2);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoProcesado);//Recién agregado
                     atenderServidor5(servidorActividad, productoProcesado, media);
                     return;
                 }
@@ -433,6 +435,7 @@ namespace Colas
                     Producto productoDeposito2 = servidorActividad2.siguienteProductoDeposito();
                     productoDeposito2.limpiar();
                     productosLibres.Enqueue(productoDeposito2);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoActual);//Recién agregado
                     esperarAtencionServidor5(servidorActividad,productoActual);
                     return;
                 }
@@ -452,6 +455,7 @@ namespace Colas
                     Producto productoDeposito4 = servidorActividad4.siguienteProductoDeposito();
                     productoDeposito4.limpiar();
                     productosLibres.Enqueue(productoDeposito4);// Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoActual);//Recién agregado
                     atenderServidor5(servidorActividad, productoActual, media);
                     return;
                 }
@@ -468,6 +472,7 @@ namespace Colas
                     Producto productoDeposito2 = servidorActividad2.siguienteProductoDeposito();
                     productoDeposito2.limpiar();
                     productosLibres.Enqueue(productoDeposito2);// Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoActual);// Recién agregado
                     esperarAtencionServidor5(servidorActividad, productoActual);
                     return;
                 }
@@ -838,17 +843,18 @@ namespace Colas
                 horasTranscurridas += 1;
                 probabilidad3Ensambles = contador3EnsamblesHora / horasTranscurridas;
 
+                promedioEnsamblesHora = (lineaAnterior.promedioEnsamblesHora + ensamblesHora) / horasTranscurridas;
                 ensamblesHora = 0;
                 
 
-                promedioEnsamblesHora = (lineaAnterior.promedioEnsamblesHora + contador3EnsamblesHora) / horasTranscurridas;
+                
             }
         }
         public void calcularPromedioProductosCola()
         {
             promedioProductosCola = (lineaAnterior.promedioProductosCola + 
                 servidorActividad1.cola.Count + servidorActividad2.cola.Count + servidorActividad3.cola.Count
-                + servidorActividad4.cola.Count + servidorActividad5.cola.Count) / 5;
+                + servidorActividad4.cola.Count + servidorActividad5.cola.Count) / idFila;
         }
         public void calcularPromedioProductosSistema()
         {
