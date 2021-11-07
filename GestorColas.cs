@@ -50,33 +50,36 @@ namespace Colas
             tabla.Columns.Add("Siguiente Fin atención 5");//linea 20
             tabla.Columns.Add("Cola servidor 5");//linea 21
             tabla.Columns.Add("Depósito 5");//linea 22
-            tabla.Columns.Add("Productos ensamblados");//linea 23
-            tabla.Columns.Add("Tiempos de espera Servidor1");//linea 24
-            tabla.Columns.Add("Tiempos de espera Servidor2");//linea 25
-            tabla.Columns.Add("Tiempos de espera Servidor3");//linea 26
-            tabla.Columns.Add("Tiempos de espera Servidor4");//linea 27
-            tabla.Columns.Add("Tiempos de espera Servidor5");//linea 28
-            tabla.Columns.Add("Duración promedio de ensamble");//linea 29
-            tabla.Columns.Add("Cola máxima servidor1");//linea 30
-            tabla.Columns.Add("Cola máxima servidor2");//linea 31
-            tabla.Columns.Add("Cola máxima servidor3");//linea 32
-            tabla.Columns.Add("Cola máxima servidor4");//linea 33
-            tabla.Columns.Add("Cola máxima servidor5");//linea 34
-            tabla.Columns.Add("Cola encastre");//linea 35
-            tabla.Columns.Add("Promedio productos en cola de servidores");//linea 36
-            tabla.Columns.Add("Promedio productos en sistema");//linea 37
-            tabla.Columns.Add("Porcentaje ocupación servidor1");//linea 38
-            tabla.Columns.Add("Porcentaje ocupación servidor2");//linea 39
-            tabla.Columns.Add("Porcentaje ocupación servidor3");//linea 40
-            tabla.Columns.Add("Porcentaje ocupación servidor4");//linea 41
-            tabla.Columns.Add("Porcentaje ocupación servidor5");//linea 42
-            tabla.Columns.Add("Tiempo bloqueo servidor 5");//linea 43
-            tabla.Columns.Add("Tiempo ocupación servidor 5");//linea 44
-            tabla.Columns.Add("Bloqueo/Ocupacion servidor5");//linea 45
-            tabla.Columns.Add("Productos ensamblados por hora");//linea 46
-            tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 47
-            tabla.Columns.Add("Horas transcurridas");//linea 48
-            tabla.Columns.Add("Promedio ensambles por hora");//linea 49
+            tabla.Columns.Add("Estado servidor Encastre");//linea 23
+            tabla.Columns.Add("Siguiente Fin Encastre");//linea 24
+            tabla.Columns.Add("Cola encastre");//linea 25
+            tabla.Columns.Add("Productos ensamblados");//linea 26
+            tabla.Columns.Add("Tiempos de espera Servidor1");//linea 27
+            tabla.Columns.Add("Tiempos de espera Servidor2");//linea 28
+            tabla.Columns.Add("Tiempos de espera Servidor3");//linea 29
+            tabla.Columns.Add("Tiempos de espera Servidor4");//linea 30
+            tabla.Columns.Add("Tiempos de espera Servidor5");//linea 31
+            tabla.Columns.Add("Duración promedio de ensamble");//linea 32
+            tabla.Columns.Add("Cola máxima servidor1");//linea 33
+            tabla.Columns.Add("Cola máxima servidor2");//linea 34
+            tabla.Columns.Add("Cola máxima servidor3");//linea 35
+            tabla.Columns.Add("Cola máxima servidor4");//linea 36
+            tabla.Columns.Add("Cola máxima servidor5");//linea 37
+            tabla.Columns.Add("Cola máxima encastre");//linea 38
+            tabla.Columns.Add("Promedio productos en cola de servidores");//linea 39
+            tabla.Columns.Add("Promedio productos en sistema");//linea 40
+            tabla.Columns.Add("Porcentaje ocupación servidor1");//linea 41
+            tabla.Columns.Add("Porcentaje ocupación servidor2");//linea 42
+            tabla.Columns.Add("Porcentaje ocupación servidor3");//linea 43
+            tabla.Columns.Add("Porcentaje ocupación servidor4");//linea 44
+            tabla.Columns.Add("Porcentaje ocupación servidor5");//linea 45
+            tabla.Columns.Add("Tiempo bloqueo servidor 5");//linea 46
+            tabla.Columns.Add("Tiempo ocupación servidor 5");//linea 47
+            tabla.Columns.Add("Bloqueo/Ocupacion servidor5");//linea 48
+            tabla.Columns.Add("Productos ensamblados por hora");//linea 49
+            tabla.Columns.Add("Probabilidad de completar 3 o más ensambles por hora");//linea 50
+            tabla.Columns.Add("Horas transcurridas");//linea 51
+            tabla.Columns.Add("Promedio ensambles por hora");//linea 52
 
             truncador = new Truncador(2);
         }
@@ -97,7 +100,9 @@ namespace Colas
                 lineaActual.calcularFinAtencion3(mediaExponencialActividad3);
                 lineaActual.calcularFinAtencion4(limInferiorActividad4,limSuperiorActividad4);
                 lineaActual.calcularFinAtencion5(mediaExponencialActividad5);
+                lineaActual.calcularFinEnsamble();
 
+                //Estadisticas
                 lineaActual.calcularColasMaximas();
                 lineaActual.calcularPorcentajeOcupacionServidores();
                 lineaActual.calcularEnsamblesPorHora();
@@ -143,36 +148,39 @@ namespace Colas
             row[20] = linea.servidorActividad5.finAtencion.ToString() !="-1" ? truncador.truncar(linea.servidorActividad5.finAtencion).ToString() : "";
             row[21] = linea.servidorActividad5.cola.Count;
             row[22] = linea.servidorActividad5.colaDeposito.Count;
-            row[23] = linea.cantidadProductos.ToString();
-            row[24] = truncador.truncar(linea.acumuladorEsperaServidor1).ToString();
-            row[25] = truncador.truncar(linea.acumuladorEsperaServidor2).ToString();
-            row[26] = truncador.truncar(linea.acumuladorEsperaServidor3).ToString();
-            row[27] = truncador.truncar(linea.acumuladorEsperaServidor4).ToString();
-            row[28] = truncador.truncar(linea.acumuladorEsperaServidor5).ToString();
-            row[29] = truncador.truncar(linea.promedioDuracionEnsamble).ToString();
-            row[30] = linea.colaMaximaServidor1.ToString();
-            row[31] = linea.colaMaximaServidor2.ToString();
-            row[32] = linea.colaMaximaServidor3.ToString();
-            row[33] = linea.colaMaximaServidor4.ToString();
-            row[34] = linea.colaMaximaServidor5.ToString();
-            row[35] = linea.colaEncastre.ToString();
-            row[36] = truncador.truncar(linea.promedioProductosCola).ToString();
-            row[37] = truncador.truncar(linea.promedioProductosSistema).ToString();
-            row[38] = truncador.truncar(linea.porcentajeOcupacionServidor1).ToString();
-            row[39] = truncador.truncar(linea.porcentajeOcupacionServidor2).ToString();
-            row[40] = truncador.truncar(linea.porcentajeOcupacionServidor3).ToString();
-            row[41] = truncador.truncar(linea.porcentajeOcupacionServidor4).ToString();
-            row[42] = truncador.truncar(linea.porcentajeOcupacionServidor5).ToString();
-            row[43] = truncador.truncar(linea.acumuladorTiemposBloqueo).ToString();
-            row[44] = truncador.truncar(linea.acumuladorTiemposOcupacion).ToString();
-            row[45] = truncador.truncar(linea.proporcionBloqueoOcupacion).ToString();
-            row[46] = truncador.truncar(linea.ensamblesHora).ToString();
-            row[47] = truncador.truncar(linea.probabilidad3Ensambles).ToString();
-            row[48] = truncador.truncar(linea.horasTranscurridas).ToString();
-            row[49] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
+            row[23] = linea.servidorEncastre.estado;
+            row[24] = linea.servidorEncastre.finAtencion.ToString() != "-1" ? truncador.truncar(linea.servidorEncastre.finAtencion).ToString() : "";
+            row[25] = linea.servidorEncastre.cola.Count;
+            row[26] = linea.cantidadProductos.ToString();
+            row[27] = truncador.truncar(linea.acumuladorEsperaServidor1).ToString();
+            row[28] = truncador.truncar(linea.acumuladorEsperaServidor2).ToString();
+            row[29] = truncador.truncar(linea.acumuladorEsperaServidor3).ToString();
+            row[30] = truncador.truncar(linea.acumuladorEsperaServidor4).ToString();
+            row[31] = truncador.truncar(linea.acumuladorEsperaServidor5).ToString();
+            row[32] = truncador.truncar(linea.promedioDuracionEnsamble).ToString();
+            row[33] = linea.colaMaximaServidor1.ToString();
+            row[34] = linea.colaMaximaServidor2.ToString();
+            row[35] = linea.colaMaximaServidor3.ToString();
+            row[36] = linea.colaMaximaServidor4.ToString();
+            row[37] = linea.colaMaximaServidor5.ToString();
+            row[38] = linea.colaEncastre.ToString();
+            row[39] = truncador.truncar(linea.promedioProductosCola).ToString();
+            row[40] = truncador.truncar(linea.promedioProductosSistema).ToString();
+            row[41] = truncador.truncar(linea.porcentajeOcupacionServidor1).ToString();
+            row[42] = truncador.truncar(linea.porcentajeOcupacionServidor2).ToString();
+            row[43] = truncador.truncar(linea.porcentajeOcupacionServidor3).ToString();
+            row[44] = truncador.truncar(linea.porcentajeOcupacionServidor4).ToString();
+            row[45] = truncador.truncar(linea.porcentajeOcupacionServidor5).ToString();
+            row[46] = truncador.truncar(linea.acumuladorTiemposBloqueo).ToString();
+            row[47] = truncador.truncar(linea.acumuladorTiemposOcupacion).ToString();
+            row[48] = truncador.truncar(linea.proporcionBloqueoOcupacion).ToString();
+            row[49] = truncador.truncar(linea.ensamblesHora).ToString();
+            row[50] = truncador.truncar(linea.probabilidad3Ensambles).ToString();
+            row[51] = truncador.truncar(linea.horasTranscurridas).ToString();
+            row[52] = truncador.truncar(linea.promedioEnsamblesHora).ToString();
 
 
-            indice = 49;
+            indice = 52;
             for (int j = 0; j < cantidadProductos; j++)
             {
                 indice += 1;

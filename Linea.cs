@@ -18,6 +18,7 @@ namespace Colas
         public string FIN_ATENCION4 = "fin de atencion servidor 4";
         public string FIN_ATENCION5 = "fin de atencion servidor 5";
         public string CONTEO = "conteo";
+        public string FIN_ENSAMBLE = "fin de encastre";
 
         public GeneradorLenguaje aleatorios;
         public Truncador truncador;
@@ -27,17 +28,21 @@ namespace Colas
         public double cantidadProductos { get; set; }
 
         public string[] EVENTOS = new string[] {"fin de atencion servidor 1", "fin de atencion servidor 2", "fin de atencion servidor 3",
-            "fin de atencion servidor 4", "fin de atencion servidor 5" };
+            "fin de atencion servidor 4", "fin de atencion servidor 5","fin de encastre"};
 
         public ServidorActividad servidorActividad1 { get; set; }
         public ServidorActividad servidorActividad2 { get; set; }
         public ServidorActividad servidorActividad3 { get; set; }
         public ServidorActividad servidorActividad4 { get; set; }
         public ServidorActividad servidorActividad5 { get; set; }
+        public ServidorActividad servidorEncastre { get; set; }
         public Linea lineaAnterior { get; set; }
         public GestorColas colas;
         public List<Producto> productos;
         public Queue<Producto> productosLibres;
+
+        public RungeKutta simuladorEncastre;
+        public double tiempoEnsamble;
 
         public double colaMaximaServidor1 = 0;
         public double colaMaximaServidor2 = 0;
@@ -100,14 +105,17 @@ namespace Colas
             this.servidorActividad3 = new ServidorActividad();
             this.servidorActividad4 = new ServidorActividad();
             this.servidorActividad5 = new ServidorActividad();
+            this.servidorEncastre = new ServidorActividad();
             this.productos = new List<Producto>();
             this.productosLibres = new Queue<Producto>();
+            this.simuladorEncastre = new RungeKutta();
             listaActividad = new List<ServidorActividad>();
             listaActividad.Add(servidorActividad1);
             listaActividad.Add(servidorActividad2);
             listaActividad.Add(servidorActividad3);
             listaActividad.Add(servidorActividad4);
             listaActividad.Add(servidorActividad5);
+            listaActividad.Add(servidorEncastre);
         }
         public Linea(Linea lineaAnterior,GestorColas colas,int desde, int hasta,int idFila)
         {
@@ -121,6 +129,8 @@ namespace Colas
             this.servidorActividad3 = lineaAnterior.servidorActividad3;
             this.servidorActividad4 = lineaAnterior.servidorActividad4;
             this.servidorActividad5 = lineaAnterior.servidorActividad5;
+            this.servidorEncastre = lineaAnterior.servidorEncastre;
+            this.simuladorEncastre = lineaAnterior.simuladorEncastre;
             this.productosLibres = lineaAnterior.productosLibres;
             this.colas = colas;
             this.desde = desde;
@@ -184,7 +194,6 @@ namespace Colas
                 {
                     reloj = listaActividad[i].finAtencion;
                     evento = EVENTOS[i];
-
                 }
             }
             if (idFila % 60 == 0)
@@ -212,6 +221,7 @@ namespace Colas
             calcularFinAtencion1EventoFinAtencion4();
             calcularFinAtencion1EventoFinAtencion5();
             calcularFinAtencion1EventoConteo();
+            calcularFinAtencion1EventoFinEnsamble();
         }
         public void calcularFinAtencion2(double a, double b)
         {
@@ -222,6 +232,7 @@ namespace Colas
             calcularFinAtencion2EventoFinAtencion4();
             calcularFinAtencion2EventoFinAtencion5();
             calcularFinAtencion2EventoConteo();
+            calcularFinAtencion2EventoFinEnsamble();
         }
         public void calcularFinAtencion3(double media)
         {
@@ -232,6 +243,7 @@ namespace Colas
             calcularFinAtencion3EventoFinAtencion4();
             calcularFinAtencion3EventoFinAtencion5();
             calcularFinAtencion3EventoConteo();
+            calcularFinAtencion3EventoFinEnsamble();
         }
         public void calcularFinAtencion4(double a,double b)
         {
@@ -242,6 +254,7 @@ namespace Colas
             calcularFinAtencion4EventoFinAtencion4(servidorActividad4,a,b);
             calcularFinAtencion4EventoFinAtencion5();
             calcularFinAtencion4EventoConteo();
+            calcularFinAtencion4EventoFinEnsamble();
         }
 
         public void calcularFinAtencion5(double media)
@@ -253,8 +266,172 @@ namespace Colas
             calcularFinAtencion5EventoFinAtencion4(servidorActividad5,media);
             calcularFinAtencion5EventoFinAtencion5(servidorActividad5,media);
             calcularFinAtencion5EventoConteo();
+            calcularFinAtencion5EventoFinEnsamble();
+        }
+        public void calcularFinEnsamble()
+        {
+            calcularFinEnsambleEventoLlegadaCliente();
+            calcularFinEnsambleEventoFinAtencion1();
+            calcularFinEnsambleEventoFinAtencion2();
+            calcularFinEnsambleEventoFinAtencion3(servidorEncastre);
+            calcularFinEnsambleEventoFinAtencion4();
+            calcularFinEnsambleEventoFinAtencion5(servidorEncastre);
+            calcularFinEnsambleEventoConteo();
+            calcularFinEnsambleEventoFinEnsamble(servidorEncastre);
+        }
+        private void calcularFinEnsambleEventoFinEnsamble(ServidorActividad servidorActividad)
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE))
+            {
+                Producto productoProcesado = servidorActividad.getProductoActual();
+                productosLibres.Enqueue(productoProcesado); //Reutilización de columnas de objetos temporales
+                productoProcesado.limpiar();
+                cantidadProductos += 1;
+                ensamblesHora += 1;
+
+                if (lineaAnterior.tieneColaServidor(servidorActividad))
+                {
+                    Producto productoActual = servidorActividad.siguienteProducto();
+                    atenderServidorEncastre(servidorActividad, productoActual);
+                }
+                else
+                {
+                    servidorActividad.liberar();
+                }
+            }
         }
 
+        private void calcularFinEnsambleEventoFinAtencion3(ServidorActividad servidorActividad)
+        {
+            if (this.evento.Equals(FIN_ATENCION3))
+            {
+                if ((servidorActividad.estaLibre() || servidorActividad.estaBloqueado()) && servidorActividad5.tieneColaDeposito())
+                {
+                    Producto productoProcesado = servidorActividad3.siguienteProductoDeposito();
+                    Producto productoDeposito5 = servidorActividad5.siguienteProductoDeposito();
+                    productoDeposito5.limpiar();
+                    productosLibres.Enqueue(productoDeposito5);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoProcesado);//Recién agregado
+                    atenderServidorEncastre(servidorActividad, productoProcesado);
+                    return;
+                }
+
+                if ((servidorActividad.estaLibre() || servidorActividad.estaBloqueado()) && !servidorActividad5.tieneColaDeposito())
+                {
+                    servidorActividad.bloquear();
+                    return;
+                }
+
+                if (servidorActividad.estaOcupado() && servidorActividad5.tieneColaDeposito())
+                {
+                    Producto productoActual = servidorActividad3.siguienteProductoDeposito();
+                    Producto productoDeposito5 = servidorActividad5.siguienteProductoDeposito();
+                    productoDeposito5.limpiar();
+                    productosLibres.Enqueue(productoDeposito5);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoActual);//Recién agregado
+                    esperarAtencionServidorEncastre(servidorActividad, productoActual);
+                    return;
+                }
+                if (servidorActividad.estaOcupado() && !servidorActividad5.tieneColaDeposito())
+                {
+                    servidorActividad.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad));
+                }
+            }
+        }
+        private void calcularFinEnsambleEventoFinAtencion5(ServidorActividad servidorActividad)
+        {
+            if (this.evento.Equals(FIN_ATENCION5))
+            {
+                if ((servidorActividad.estaLibre() || servidorActividad.estaBloqueado()) && servidorActividad3.tieneColaDeposito())
+                {
+                    Producto productoProcesado = servidorActividad5.siguienteProductoDeposito();
+                    Producto productoDeposito3 = servidorActividad3.siguienteProductoDeposito();
+                    productoDeposito3.limpiar();
+                    productosLibres.Enqueue(productoDeposito3);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoProcesado);//Recién agregado
+                    atenderServidorEncastre(servidorActividad, productoProcesado);
+                    return;
+                }
+
+                if ((servidorActividad.estaLibre() || servidorActividad.estaBloqueado()) && !servidorActividad3.tieneColaDeposito())
+                {
+                    servidorActividad.bloquear();
+                    return;
+                }
+
+                if (servidorActividad.estaOcupado() && servidorActividad3.tieneColaDeposito())
+                {
+                    Producto productoActual = servidorActividad5.siguienteProductoDeposito();
+                    Producto productoDeposito3 = servidorActividad3.siguienteProductoDeposito();
+                    productoDeposito3.limpiar();
+                    productosLibres.Enqueue(productoDeposito3);//Reutilización de columnas de objetos temporales
+                    productosLibres.Enqueue(productoActual);//Recién agregado
+                    esperarAtencionServidorEncastre(servidorActividad, productoActual);
+                    return;
+                }
+                if (servidorActividad.estaOcupado() && !servidorActividad3.tieneColaDeposito())
+                {
+                    servidorActividad.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad));
+                }
+            }
+        }
+        private void calcularFinAtencion4EventoFinEnsamble()
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE) && lineaAnterior.tieneFinAtencion(servidorActividad4))
+            {
+                servidorActividad4.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad4));
+            }
+        }
+        private void calcularFinAtencion3EventoFinEnsamble()
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE) && lineaAnterior.tieneFinAtencion(servidorActividad3))
+            {
+                servidorActividad3.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad3));
+            }
+        }
+        private void calcularFinAtencion5EventoFinEnsamble()
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE) && lineaAnterior.tieneFinAtencion(servidorActividad5))
+            {
+                servidorActividad5.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad5));
+            }
+        }
+
+        private void calcularFinEnsambleEventoLlegadaCliente()
+        {
+            if (this.evento.Equals(LLEGADA_PEDIDO) && lineaAnterior.tieneFinAtencion(servidorEncastre))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            }
+        }
+        private void calcularFinEnsambleEventoFinAtencion1()
+        {
+            if (this.evento.Equals(FIN_ATENCION1) && lineaAnterior.tieneFinAtencion(servidorEncastre))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            }
+        }
+        private void calcularFinEnsambleEventoFinAtencion2()
+        {
+            if (this.evento.Equals(FIN_ATENCION2) && lineaAnterior.tieneFinAtencion(servidorEncastre))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            }
+        }
+        private void calcularFinEnsambleEventoFinAtencion4()
+        {
+            if (this.evento.Equals(FIN_ATENCION4) && lineaAnterior.tieneFinAtencion(servidorEncastre))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            }
+        }
+        private void calcularFinEnsambleEventoConteo()
+        {
+            if (this.evento.Equals(CONTEO) && lineaAnterior.tieneFinAtencion(servidorEncastre))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            }
+        }
         private void calcularFinAtencion1EventoLlegadaCliente(ServidorActividad servidorActividad, double a, double b)
         {
             if (this.evento.Equals(LLEGADA_PEDIDO))
@@ -355,17 +532,6 @@ namespace Colas
                 else
                 {
                     servidorActividad.liberar();
-                }
-                if (servidorActividad5.tieneColaDeposito())
-                {
-                    Producto productoDeposito5 = servidorActividad5.siguienteProductoDeposito();
-                    Producto productoDeposito3 = servidorActividad.siguienteProductoDeposito();
-                    productoDeposito5.limpiar();
-                    productoDeposito3.limpiar();
-                    productosLibres.Enqueue(productoDeposito3); //Reutilización de columnas de objetos temporales
-                    productosLibres.Enqueue(productoDeposito5); //Reutilización de columnas de objetos temporales
-                    cantidadProductos += 1;
-                    ensamblesHora += 1;
                 }
             }
         }
@@ -509,17 +675,6 @@ namespace Colas
                 {
                     servidorActividad.liberar();
                 }
-                if (servidorActividad3.tieneColaDeposito())
-                {
-                    Producto productoDeposito3 = servidorActividad3.siguienteProductoDeposito();
-                    Producto productoDeposito5 = servidorActividad.siguienteProductoDeposito();
-                    productoDeposito5.limpiar();
-                    productoDeposito3.limpiar();
-                    productosLibres.Enqueue(productoDeposito3); //Reutilización de columnas de objetos temporales
-                    productosLibres.Enqueue(productoDeposito5); //Reutilización de columnas de objetos temporales
-                    cantidadProductos += 1;
-                    ensamblesHora += 1;
-                }
             }
         }
 
@@ -559,6 +714,13 @@ namespace Colas
             productoActual.esperarAtencionServidor5();
             productoActual.horaLlegadaServidor = this.reloj;
         }
+        private void esperarAtencionServidorEncastre(ServidorActividad servidorActividad,Producto productoActual)
+        {
+            servidorActividad.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorEncastre));
+            servidorActividad.agregarACola(productoActual);
+            productoActual.esperarAtencionServidorEncastre();
+            productoActual.horaLlegadaServidor = this.reloj;
+        }
         private void atenderServidor1(ServidorActividad servidorActividad, Producto productoActual, double a, double b)
         {
             productoActual.atenderServidor1();
@@ -594,6 +756,14 @@ namespace Colas
             servidorActividad.agregarFinAtencion(this.reloj + (-media * Math.Log(1 - aleatorios.siguienteAleatorio())));
             servidorActividad.productoActual = productoActual;
             acumuladorEsperaServidor5 += this.reloj - productoActual.horaLlegadaServidor;
+        }
+        private void atenderServidorEncastre(ServidorActividad servidorActividad,Producto productoActual)
+        {
+            productoActual.encastrar();
+            tiempoEnsamble = simuladorEncastre.calcularFinEncastre(this.reloj);
+            servidorActividad.agregarFinAtencion(this.reloj + tiempoEnsamble);
+            servidorActividad.productoActual = productoActual;
+            //Falta Tiempo de espera
         }
         
         private Boolean tieneFinAtencion(ServidorActividad servidorActividad)
@@ -636,6 +806,13 @@ namespace Colas
                 servidorActividad1.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad1));
             }
         }
+        private void calcularFinAtencion1EventoFinEnsamble()
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE) && lineaAnterior.tieneFinAtencion(servidorActividad1))
+            {
+                servidorEncastre.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad1));
+            }
+        }
         private void calcularFinAtencion2EventoFinAtencion1()
         {
             if (this.evento.Equals(FIN_ATENCION1) && lineaAnterior.tieneFinAtencion(servidorActividad2))
@@ -667,6 +844,13 @@ namespace Colas
         private void calcularFinAtencion2EventoConteo()
         {
             if (this.evento.Equals(CONTEO) && lineaAnterior.tieneFinAtencion(servidorActividad2))
+            {
+                servidorActividad2.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad2));
+            }
+        }
+        private void calcularFinAtencion2EventoFinEnsamble()
+        {
+            if (this.evento.Equals(FIN_ENSAMBLE) && lineaAnterior.tieneFinAtencion(servidorActividad2))
             {
                 servidorActividad2.agregarFinAtencion(lineaAnterior.obtenerFinAtencionServidor(servidorActividad2));
             }
@@ -780,7 +964,7 @@ namespace Colas
             colaMaximaServidor3 = Math.Max(servidorActividad3.cola.Count, colaMaximaServidor3);
             colaMaximaServidor4 = Math.Max(servidorActividad4.cola.Count, colaMaximaServidor4);
             colaMaximaServidor5 = Math.Max(servidorActividad5.cola.Count, colaMaximaServidor5);
-            colaEncastre = Math.Max(servidorActividad3.colaDeposito.Count + servidorActividad5.colaDeposito.Count, colaEncastre);
+            colaEncastre = Math.Max(servidorEncastre.cola.Count, colaEncastre);
         }
         public void calcularPorcentajeOcupacionServidores()
         {
@@ -885,7 +1069,7 @@ namespace Colas
         {
             if (lineaAnterior.servidorActividad5.estaBloqueado())
             {
-                this.acumuladorTiemposBloqueo += (reloj - lineaAnterior.reloj);
+                this.acumuladorTiemposBloqueo += (this.reloj - lineaAnterior.reloj);
             }
             
         }

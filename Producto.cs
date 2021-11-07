@@ -23,8 +23,11 @@ namespace Colas
 
         String EN_DEPOSITO1 = "ED1";
         String EN_DEPOSITO2 = "ED2";
+        String EN_DEPOSITO3 = "ED3";
         String EN_DEPOSITO4 = "ED4";
+        String EN_DEPOSITO5 = "ED5";
         String ESPERANDO_ENCASTRE = "EE";
+        String SIENDO_ENCASTRADO = "SE";
         
         public string estado;
         public double tiempoEsperaCola;
@@ -87,7 +90,7 @@ namespace Colas
         }
         public void colocarDeposito3()
         {
-            this.estado = ESPERANDO_ENCASTRE;
+            this.estado = EN_DEPOSITO3;
         }
         public void colocarDeposito4()
         {
@@ -95,13 +98,17 @@ namespace Colas
         }
         public void colocarDeposito5()
         {
+            this.estado = EN_DEPOSITO5;
+        }
+        public void encastrar()
+        {
+            this.estado = SIENDO_ENCASTRADO;
+        }
+        public void esperarAtencionServidorEncastre()
+        {
             this.estado = ESPERANDO_ENCASTRE;
         }
 
-        public Boolean estaLibre()
-        {
-            return this.estado == "";
-        }
         public void limpiar()
         {
             estado = "";
