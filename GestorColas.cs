@@ -94,6 +94,8 @@ namespace Colas
             {
                 lineaActual = new Linea(lineaAnterior, this, desde, hasta, i);
                 lineaActual.calcularEvento();
+                lineaActual.calcularTiempoBloqueo();
+                lineaActual.calcularTiempoOcupacion();
                 lineaActual.calcularSiguienteLlegada();
                 lineaActual.calcularFinAtencion1(limInferiorActividad1,limSuperiorActividad1);
                 lineaActual.calcularFinAtencion2(limInferiorActividad2,limSuperiorActividad2);
@@ -108,8 +110,7 @@ namespace Colas
                 lineaActual.calcularEnsamblesPorHora();
                 lineaActual.calcularPromedioProductosCola();
                 lineaActual.calcularPromedioProductosSistema();
-                lineaActual.calcularTiempoBloqueo();
-                lineaActual.calcularTiempoOcupacion();
+ 
                 lineaActual.calcularProporcionBloqueoOcupacion();
                 lineaActual.calcularPromedioDuracionEnsamble();
 
