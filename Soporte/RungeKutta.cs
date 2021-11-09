@@ -89,7 +89,7 @@ namespace Colas.Soporte
 
                 if (contador == 2)
                 {
-                    return tiempo;
+                    return lineaAnterior[0];
                 }
 
                 lineaAnterior = lineaActual;

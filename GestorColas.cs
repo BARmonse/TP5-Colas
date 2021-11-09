@@ -67,7 +67,7 @@ namespace Colas
             tabla.Columns.Add("Cola máxima servidor5");//linea 37
             tabla.Columns.Add("Cola máxima encastre");//linea 38
             tabla.Columns.Add("Promedio productos en cola de servidores");//linea 39
-            tabla.Columns.Add("Promedio productos en sistema");//linea 40
+            tabla.Columns.Add("Promedio de productos en sistema");//linea 40
             tabla.Columns.Add("Porcentaje ocupación servidor1");//linea 41
             tabla.Columns.Add("Porcentaje ocupación servidor2");//linea 42
             tabla.Columns.Add("Porcentaje ocupación servidor3");//linea 43

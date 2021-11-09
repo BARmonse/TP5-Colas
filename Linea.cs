@@ -42,6 +42,7 @@ namespace Colas
         public Queue<Producto> productosLibres;
 
         public RungeKutta simuladorEncastre;
+        public Boolean huboEnsamble;
         public double tiempoEnsamble;
 
         public double colaMaximaServidor1 = 0;
@@ -109,6 +110,7 @@ namespace Colas
             this.productos = new List<Producto>();
             this.productosLibres = new Queue<Producto>();
             this.simuladorEncastre = new RungeKutta();
+            this.huboEnsamble = false;
             listaActividad = new List<ServidorActividad>();
             listaActividad.Add(servidorActividad1);
             listaActividad.Add(servidorActividad2);
@@ -164,6 +166,8 @@ namespace Colas
             this.acumuladorEsperaServidor3 = lineaAnterior.acumuladorEsperaServidor3;
             this.acumuladorEsperaServidor4 = lineaAnterior.acumuladorEsperaServidor4;
             this.acumuladorEsperaServidor5 = lineaAnterior.acumuladorEsperaServidor5;
+            this.huboEnsamble = lineaAnterior.huboEnsamble;
+            this.tiempoEnsamble = lineaAnterior.tiempoEnsamble;
         }
         private Producto buscarProductoLibre()
         {
@@ -760,7 +764,11 @@ namespace Colas
         private void atenderServidorEncastre(ServidorActividad servidorActividad,Producto productoActual)
         {
             productoActual.encastrar();
-            tiempoEnsamble = simuladorEncastre.calcularFinEncastre(this.reloj);
+            if (!huboEnsamble)
+            {
+                tiempoEnsamble = simuladorEncastre.calcularFinEncastre(this.reloj);
+                huboEnsamble = true;
+            }
             servidorActividad.agregarFinAtencion(this.reloj + tiempoEnsamble);
             servidorActividad.productoActual = productoActual;
             //Falta Tiempo de espera
@@ -1029,9 +1037,6 @@ namespace Colas
 
                 promedioEnsamblesHora = (lineaAnterior.promedioEnsamblesHora + ensamblesHora) / horasTranscurridas;
                 ensamblesHora = 0;
-                
-
-                
             }
         }
         public void calcularPromedioProductosCola()
